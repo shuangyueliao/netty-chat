@@ -7,6 +7,7 @@
 4. 支持文字和表情的内容；<br>
 5. 浏览器与服务器保持长连接，定时心跳检测；
 <br><br>
+![在这里插入图片描述](https://img-blog.csdn.net/20181010140310269?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1cmVTYW5k/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 ## 服务器
 服务器端使用Netty作为通信框架，支持客户端通过WebSocket通信。服务器会检测链路是否处于空闲，如果60秒内没有收到客户端的任何消息，那么服务器会主动关闭该链路。<br><br>
 为保证链路的可用性，服务器会定时发送Ping消息给客户端，客户端收到Ping消息后，必须回一个Pong消息响应，避免链路由于空闲而被关闭。<br><br>
