@@ -15,8 +15,7 @@ The WebSocket chat room based on Netty is implemented as follows:
 <br>
 
 # 流程描述/Process description
-
-![discription](https://github.com/lightTrace/chat-room-by-netty/blob/master/docs/pic/flow.png）
+![discription](https://github.com/lightTrace/chat-room-by-netty/blob/master/docs/pic/flow.png)
 
 
  
