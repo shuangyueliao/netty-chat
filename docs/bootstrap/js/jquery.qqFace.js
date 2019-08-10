@@ -75,7 +75,7 @@ jQuery.fn.extend({
 	}, 
 
 	setCaret: function(){ 
-		if(!$.browser.msie) return;
+		// if(!$.browser.msie) return;
 		var initSetCaret = function(){ 
 			var textObj = $(this).get(0); 
 			textObj.caretPos = document.selection.createRange().duplicate();
