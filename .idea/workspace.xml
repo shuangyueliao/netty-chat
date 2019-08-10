@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b0b8e760-2f42-4f45-a8f7-526116f4e1ec" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/docs/bootstrap/js/jquery.qqFace.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/bootstrap/js/jquery.qqFace.js" afterDir="false" />
-    </list>
+    <list default="true" id="b0b8e760-2f42-4f45-a8f7-526116f4e1ec" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -591,7 +589,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1565429789748" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1565431747026" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/pom.xml" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -646,12 +644,12 @@
       <workItem from="1565311350946" duration="3060000" />
       <workItem from="1565358482315" duration="11838000" />
       <workItem from="1565407669915" duration="4584000" />
-      <workItem from="1565423584026" duration="6504000" />
+      <workItem from="1565423584026" duration="8244000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="33689000" />
+    <option name="totallyTimeSpent" value="35429000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
