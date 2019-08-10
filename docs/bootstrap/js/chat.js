@@ -4,6 +4,7 @@
 var socket = null;
 var isAuth = false;
 var userNick = null;
+var password = null;
 var userCount = 0;
 $(function () {
     $("#menuModal").modal('show');
@@ -43,6 +44,7 @@ function sendMess(mess) {
 function userLogin() {
     if (!userNick) {
         userNick = $('#nick').val().trim();
+        password = $('#password').val().trim();
     }
     if (userNick) {
         if (!window.WebSocket) {
@@ -68,6 +70,7 @@ function userLogin() {
                         closeInvake(null);
                         break;
                     case 5 << 8 | 220: // auth message
+                        if (data == false)
                         console.log("auth message: " + JSON.stringify(data));
                         break;
                     case 6 << 8 | 220: // broadcast message
@@ -112,6 +115,7 @@ function openInvake(event) {
     var obj = {};
     obj.code = 10000;
     obj.nick = $('#nick').val().trim();
+    obj.password = $('#password').val().trim();
     send(true, JSON.stringify(obj));
 }
 ;
@@ -138,12 +142,18 @@ function sysInvake(data) {
             $('#userCount').text(userCount);
             break;
         case 20002: // auth
+            if (data.extend.mess == false)
+            {
+                alert("用户名或密码错误，请重新登录")
+                location.reload();
+                break;
+            }
             console.log("auth result: " + data.extend.mess);
             isAuth = data.extend.mess;
             if (isAuth) {
                 $("#menuModal").modal('hide');
                 $('#chatWin').show();
-                $('#content').append('欢迎来到netty聊天室！！');
+                $('#content').append('进入聊天室！');
                 // $('#content').scrollTop($('#content')[0].scrollHeight);
             }
             break;

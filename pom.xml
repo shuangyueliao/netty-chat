@@ -66,7 +66,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.wolfbe.chat.HappyChatMain</mainClass>
+                            <mainClass>com.shuangyueliao.chat.HappyChatMain</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -85,7 +85,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.wolfbe.chat.HappyChatMain</mainClass>
+                            <mainClass>com.shuangyueliao.chat.HappyChatMain</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

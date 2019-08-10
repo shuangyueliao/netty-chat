@@ -6,8 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="happychat" />
+        <module name="netty-chat" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="netty-chat" target="1.7" />
+    </bytecodeTargetLevel>
   </component>
 </project>

@@ -7,11 +7,11 @@
     <meta name="description" content="聊天室,Netty,WebSocket">
     <meta name="author" content="Andy">
     <link rel="icon" href="./favicon.ico">
-    <title>netty聊天室 | 支持多人同时在线</title>
+    <title>聊天室</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="http://chat.wolfbe.com/bootstrap/css/reset.css">
-    <link rel="stylesheet" href="http://chat.wolfbe.com/bootstrap/css/chat.css">
+    <link rel="stylesheet" href="bootstrap/css/reset.css">
+    <link rel="stylesheet" href="bootstrap/css/chat.css">
     <!--<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">-->
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -26,15 +26,19 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="modalLabel">欢迎来到聊天室</h4>
+                <h4 class="modal-title" id="modalLabel">登录</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" id="menuForm">
                     <input type="hidden" name="id" id="id"/>
                     <div class="form-group">
-                        <label for="nick" class="col-sm-2 control-label">昵称:</label>
+                        <label for="nick" class="col-sm-2 control-label">用户名:</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control validate[required]" name="nick" id="nick">
+                        </div>
+                        <label for="password" class="col-sm-2 control-label">密码:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control validate[required]" name="password" id="password">
                         </div>
                     </div>
                 </form>
