@@ -1,16 +1,22 @@
 package com.shuangyueliao.chat.handler;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.shuangyueliao.chat.entity.Account;
 import com.shuangyueliao.chat.entity.UserInfo;
+import com.shuangyueliao.chat.mapper.AccountMapper;
 import com.shuangyueliao.chat.proto.ChatProto;
+import com.shuangyueliao.chat.queue.OfflineInfoTransmit;
 import com.shuangyueliao.chat.util.BlankUtil;
 import com.shuangyueliao.chat.util.NettyUtil;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -18,21 +24,57 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
+ * @author shuangyueliao
  * @description Channel的管理器以及user管理工具类
  */
+@Component
 public class UserInfoManager {
-    private static Map<String, String> map = new HashMap<>();
     private static final Logger logger = LoggerFactory.getLogger(UserInfoManager.class);
 
-    private static ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock(true);
+    public static ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock(true);
 
-    private static ConcurrentMap<Channel, UserInfo> userInfos = new ConcurrentHashMap<>();
+    public static ConcurrentMap<Channel, UserInfo> userInfos = new ConcurrentHashMap<>();
     private static AtomicInteger userCount = new AtomicInteger(0);
+    @Resource
+    private AccountMapper accountMapper;
+    private static AccountMapper accountMapperStatic;
 
-    static {
-        map.put("test1", "123456");
-        map.put("test2", "123456");
-        map.put("test3", "123456");
+    @Autowired
+    private OfflineInfoTransmit offlineInfoTransmit;
+    private static OfflineInfoTransmit offlineInfoTransmitStatic;
+
+    public static void p2p(Integer uid, String nick, String other, String message) {
+        if (!BlankUtil.isBlank(message)) {
+            try {
+                rwLock.readLock().lock();
+                message = "[来自于用户" + nick +"的消息]:" + message;
+                Set<Channel> keySet = userInfos.keySet();
+                for (Channel ch : keySet) {
+                    UserInfo userInfo = userInfos.get(ch);
+                    // 找出对应channel进行发送
+                    if (userInfo == null || !userInfo.isAuth() || !userInfo.getNick().equals(other)) {
+                        continue;
+                    }
+                    //在线用户的个人对个人通信直接走channel，不走第三方中间件和其它
+                    ch.writeAndFlush(new TextWebSocketFrame(ChatProto.buildMessProto(userInfo.getId(), userInfo.getUsername(), message)));
+                    return;
+                }
+                LambdaQueryWrapper<Account> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+                lambdaQueryWrapper.eq(Account::getUsername, other);
+                Account account = accountMapperStatic.selectOne(lambdaQueryWrapper);
+                if (account != null) {
+                    offlineInfoTransmitStatic.pushP2P(account.getId(), message);
+                }
+            } finally {
+                rwLock.readLock().unlock();
+            }
+        }
+    }
+
+    @PostConstruct
+    public void init() {
+        accountMapperStatic = accountMapper;
+        offlineInfoTransmitStatic = offlineInfoTransmit;
     }
 
     public static void addChannel(Channel channel) {
@@ -61,15 +103,23 @@ public class UserInfoManager {
         if (nick == null || password == null) {
             return false;
         }
-        if (!password.equals(map.get(nick))) {
+        LambdaQueryWrapper<Account> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Account::getUsername, nick).eq(Account::getPassword, password);
+        Account account = accountMapperStatic.selectOne(lambdaQueryWrapper);
+        if (account == null) {
             return false;
         }
         // 增加一个认证用户
         userCount.incrementAndGet();
         userInfo.setNick(nick);
         userInfo.setAuth(true);
-        userInfo.setUserId();
+        userInfo.setId(account.getId());
+        userInfo.setUsername(account.getUsername());
+        userInfo.setGroupNumber(account.getGroupNumber());
         userInfo.setTime(System.currentTimeMillis());
+
+        // 注册该用户推送消息的通道
+        offlineInfoTransmitStatic.registerPull(channel);
         return true;
     }
 
@@ -86,11 +136,12 @@ public class UserInfoManager {
             channel.close();
             UserInfo userInfo = userInfos.get(channel);
             if (userInfo != null) {
-                UserInfo tmp = userInfos.remove(channel);
-                if (tmp != null && tmp.isAuth()) {
+                if (userInfo.isAuth()) {
+                    offlineInfoTransmitStatic.unregisterPull(channel);
                     // 减去一个认证用户
                     userCount.decrementAndGet();
                 }
+                userInfos.remove(channel);
             }
         } finally {
             rwLock.writeLock().unlock();
@@ -99,22 +150,15 @@ public class UserInfoManager {
     }
 
     /**
-     * 广播普通消息
+     * 在同一个群中广播普通消息
      *
      * @param message
      */
-    public static void broadcastMess(int uid, String nick, String message) {
+    public static void broadcastMess(int uid, String nick, String message, String groupNumber) {
         if (!BlankUtil.isBlank(message)) {
             try {
                 rwLock.readLock().lock();
-                Set<Channel> keySet = userInfos.keySet();
-                for (Channel ch : keySet) {
-                    UserInfo userInfo = userInfos.get(ch);
-                    if (userInfo == null || !userInfo.isAuth()) {
-                        continue;
-                    }
-                    ch.writeAndFlush(new TextWebSocketFrame(ChatProto.buildMessProto(uid, nick, message)));
-                }
+                offlineInfoTransmitStatic.pushGroup(groupNumber, message);
             } finally {
                 rwLock.readLock().unlock();
             }
